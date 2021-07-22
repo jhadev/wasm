@@ -1,5 +1,16 @@
 // The entry file of your WebAssembly module.
+// declare log function
 declare function log(a: i32, b:i32): void
+// 2 pages === 128kb of memory
+memory.grow(2);
+
+// write directly to memory
+store<u8>(0, 21);
+store<u8>(1, 99);
+
+export function readMemory(n: i32): i32 {
+  return load<u8>(n);
+}
 
 export function add(a: i32, b: i32): i32 {
 

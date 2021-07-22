@@ -8,16 +8,31 @@
   </head>
   <body>
     <div id="main"></div>
+    <div id="memory"></div>
     <script src="./js/loader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@assemblyscript/loader/umd/index.js"></script>
 
     <script>
       const WL = new WasmLoader();
       WL.wasm("/build/optimized.wasm").then((instance) => {
-        const { fizzbuzz, __getString } = instance;
+        const { fizzbuzz, __getString, memory, readMemory } = instance;
         // need to use string helper to turn memory pointer into a string
         const str = __getString(fizzbuzz(3));
-        document.write(str);
+        const memoryArray = new Uint8Array(memory.buffer);
+        const h2 = document.createElement("h2");
+        h2.textContent = str;
+        document.getElementById("main").appendChild(h2);
+
+        const h3 = document.createElement("h3");
+        h3.textContent = `Memory at index 1: ${memoryArray[1]}`;
+        document.getElementById("memory").appendChild(h3);
+
+        // write to memory
+        memoryArray[2] = 42;
+        const h4 = document.createElement("h4");
+        // read from memory
+        h4.textContent = readMemory(2);
+        document.getElementById("memory").appendChild(h4);
       });
     </script>
   </body>
