@@ -1,5 +1,3 @@
-// ASSEMBLYSCRIPT LOADER WITH HELPER FUNCTIONS
-
 class WasmLoader {
   constructor() {
     this._imports = {
@@ -19,11 +17,14 @@ class WasmLoader {
   async wasm(path, imports = this._imports) {
     console.log(`Fetching ${path}`);
 
-    if (!loader.instantiateStreaming) {
+    if (!WebAssembly.instantiateStreaming) {
       return this.wasmFallback(path, imports);
     }
 
-    const instance = await loader.instantiateStreaming(fetch(path), imports);
+    const { instance } = await WebAssembly.instantiateStreaming(
+      fetch(path),
+      imports
+    );
     return instance?.exports;
   }
 
@@ -31,7 +32,7 @@ class WasmLoader {
     console.log(`Using fallback ${path}`);
     const response = await fetch(path);
     const bytes = await response?.arrayBuffer();
-    const instance = loader.instantiate(bytes, imports);
+    const { instance } = WebAssembly.instantiate(bytes, imports);
 
     return instance?.exports;
   }
